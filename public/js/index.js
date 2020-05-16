@@ -2,6 +2,7 @@
 
 import '@babel/polyfill'
 import { login,logout } from './login'
+import { signup } from './signup'
 import { displayMap } from './mapbox'
 import { updateSetting } from './updateSettings'
 import { bookTour } from './stripe'
@@ -9,6 +10,7 @@ import { bookTour } from './stripe'
 //DOM ELEMENT
 const mapBox = document.getElementById('map')
 const  loginForm = document.querySelector('.form--login')
+const signUpForm = document.querySelector('.form--signup')
 const logoutBtn=document.querySelector('.nav__el--logout')
 const userdata=document.querySelector('.form-user-data')
 const userpassword= document.querySelector('.form-user-password')
@@ -20,6 +22,17 @@ if(mapBox){
     displayMap(locations)
     //console.log(locations)
 }
+
+if (signUpForm)
+signUpForm.addEventListener('submit', e =>{
+  e.preventDefault()
+  const name=document.getElementById('name').value
+  const email=document.getElementById('email').value
+  const password=document.getElementById('password').value
+  const passwordConfirm=document.getElementById('passconfirm').value
+  signup(name,email,password,passwordConfirm)
+ 
+})
 
 if (loginForm)
   loginForm.addEventListener('submit', e => {

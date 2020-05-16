@@ -10,7 +10,9 @@ router.get('/', bookingController.createBookingCheckout,
                 viewsController.getOverview)
 router.get('/tour/:slug', viewsController.getTour)
 router.get('/login', viewsController.getloginForm)
-router.get('/signp', viewsController.getloginForm)
+router.get('/signup', viewsController.getSignUpForm)
 router.get('/me',authController.protect, viewsController.getAccount)
 router.post('/submit-user-data', authController.protect, viewsController.updateUserData)
-router.get('/my-tours', authController.protect, vi
+router.get('/my-tours', authController.protect, viewsController.getMytours)
+
+module.exports = router

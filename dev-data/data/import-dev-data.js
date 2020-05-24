@@ -6,28 +6,28 @@ const User =require('../../models/userModel')
 const Review =require('../../models/reviewModel')
 
 dotenv.config({path:'./config.env'})
-/*
-const connectionString=process.env.DATABASE.replace(
+
+const DB=process.env.DATABASE.replace(
     '<PASSWORD>',process.env.DATABASE_PASSWORD)
 
     
-    //real database
-    mongoose.connect(connectionString,{
-        userNewUrlParser:true,
+     mongoose.connect(DB,{
+        useNewUrlParser:true,
+        useUnifiedTopology: true,
         userCreateIndex:true,
         userFindAndModify:false
     }).then((con)=>{
-  console.log(con.connections)
   console.log('Db connection successful')
     })
-*/
-//local connection
+
+/*
+local connection
 mongoose.connect(process.env.DATABASE_LOCAL,{
     userNewUrlParser:true,
     userCreateIndex:true,
     userFindAndModify:false
 }).then(()=>console.log('Db connection successful'))
-
+*/
 //READ JSON FILE
 const tours=JSON.parse(fs.readFileSync(`${__dirname}/tours.json`,'utf-8'))
 const users=JSON.parse(fs.readFileSync(`${__dirname}/users.json`,'utf-8'))

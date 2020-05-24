@@ -5,6 +5,17 @@ const catchAsync=require('../utils/catchAsync')
 const AppError=require('../utils/appError')
 const factory= require('./handlerFactory')
 
+// exports.getAllBookings = catchAsync(async(req,res,next)=>{
+//       let filter={}
+//       if(req.params.tourId) filter = {tour: req.params.tourId}
+//       const bookings = await Booking.find(filter)
+//       res.status(200).json({
+//          status: 'success',
+//          data:{
+//              bookings
+//          } 
+//       })
+// })
 
 exports.getCheckoutSession =catchAsync(async (req,res,next)=>{
     //get the currently booked tour
@@ -17,14 +28,14 @@ exports.getCheckoutSession =catchAsync(async (req,res,next)=>{
 
      cancel_url: `${req.protocol}://${req.get('host')}/tour/${tour.slug}`,
      customer_email: req.user.email,
-     client_reference_id: req.params.tourId,
+     client_reference_id: req.params.tourId, //help get access to the object after success
      line_items: [
          {
              name: `${tour.name} Tour`,
              description: tour.summary,
              images: [`https://www.natours.dev/img/tours/${tour.imageCover}`],
              amount: tour.price * 100,
-             currency: 'usd',
+             currency: 'ksh',
              quantity: 1
          } 
      ]
@@ -35,15 +46,16 @@ exports.getCheckoutSession =catchAsync(async (req,res,next)=>{
         session
     })
 })
-
+ //populate booking collection
 exports.createBookingCheckout = catchAsync(async(req,res,next) => {
     //This is temporary. It is unsecured. anyone can make booking without paying 
     
     const { tour, user,price} = req.query
     if(!tour && !user && !price) return next()
-    await Booking.create({tour, user,price})
+    await Booking.create({tour, user, price})
 
     //next()// not secure it contains crusial payment info. this loop is prefered
+    //original url- the entire url from which the request came from
     res.redirect(req.originalUrl.split('?')[0])
 })
 

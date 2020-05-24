@@ -2,9 +2,11 @@ const express=require('express')
 const tourController=require('../controllers/tourController')
 const authController=require('../controllers/authController')
 const reviewRouter=require('../routes/reviewRouter')
+const bookingRoutes = require('../routes/bookingRoutes')
 const router=express.Router()
 
 router.use('/:tourId/reviews',reviewRouter)
+router.use('/:tourId/bookings',bookingRoutes)
 
 //param middleware
 //router.param('id',tourController.checkID)
@@ -27,18 +29,18 @@ router
 router.route('/distances/:latlng/unit/:unit')
 .get(tourController.getDistances)
 
+router.
+route('/monthly-plan/:year')
+.get(authController.protect,
+     authController.restrictTo('admin','lead-guide','lead'),
+     tourController.getMonthlyPlan)
+
 router
 .route('/')
 .get(tourController.getAlltours)
 .post(authController.protect, 
       authController.restrictTo('admin','lead-guide'),
       tourController.createTour)
-
-router.
-route('/monthly-plan/:year')
-.get(authController.protect,
-     authController.restrictTo('admin','lead-guide','lead'),
-     tourController.getMonthlyPlan)
 
 router
 .route('/:id')

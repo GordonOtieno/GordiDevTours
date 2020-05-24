@@ -2,37 +2,36 @@ const mongoose= require('mongoose')
 
 process.on('uncaughtException',err=>{
     console.log(err)
-    console.log('UNCAUGHT EXCEPTION! Shutting down..... ')
+    console.log('UNCAUGHT EXCEPTION! 💥 Shutting down..... ')
     console.log(err.name,err.message)
     process.exit(1)
 })
-
-const dotenv= require('dotenv')
 const app=require('./app')
+const dotenv= require('dotenv')
 dotenv.config({path:'./config.env'})
 
-const connectionString=process.env.DATABASE.replace(
+const DB=process.env.DATABASE.replace(
     '<PASSWORD>',process.env.DATABASE_PASSWORD)
 
-    /*
     //real database
-    mongoose.connect(connectionString,{
-        userNewUrlParser:true,
+    mongoose.connect(DB,{
+        useNewUrlParser:true,
+        useUnifiedTopology: true,
         userCreateIndex:true,
         userFindAndModify:false
     }).then((con)=>{
-  console.log(con.connections)
+ // console.log(con.connections)
   console.log('Db connection successful')
     })
-*/
-//local connection
-mongoose.connect(process.env.DATABASE_LOCAL,{
-    userNewUrlParser:true,
-    userCreateIndex:true,
-    userFindAndModify:false
-}).then(()=>console.log('Db connection successful'))
 
-//console.log(app.get('env'))
+// //local connection
+// mongoose.connect(process.env.DATABASE_LOCAL,{
+//     userNewUrlParser:true,
+//     userCreateIndex:true,
+//     userFindAndModify:false
+// }).then(()=>console.log('Db connection successful'))
+
+console.log(app.get('env'))
 //console.log(process.env)
 const port=process.env.PORT || 3000
  const server = app.listen(port,()=>{
@@ -41,9 +40,9 @@ const port=process.env.PORT || 3000
 //unhandled rejection and gradual shut of server
 process.on('unhandledRejection',err=>{
     console.log(err.name,err.messsage)
-    console.log('UNHANDLED REJECTION ! Shutting down..... ')
+    console.log('UNHANDLED REJECTION! 💥 Shutting down..... ')
     server.close(()=>{
-    process.exit(1)
+    process.exit(1)   //0 success/ 1 uncought exce
   })
-}) 
-
+  console.log(err)
+})  

@@ -4,12 +4,11 @@ const authController = require('../controllers/authController')
 const bookingController = require('../controllers/bookingController')
 const router=express.Router()
 
-router.use(authController.isLoggedIn)
+//router.use(authController.isLoggedIn)
 //replace app with router
-router.get('/', bookingController.createBookingCheckout,
-                viewsController.getOverview)
-router.get('/tour/:slug', viewsController.getTour)
-router.get('/login', viewsController.getloginForm)
+router.get('/',authController.isLoggedIn, viewsController.getOverview)
+router.get('/tour/:slug', authController.isLoggedIn, viewsController.isBooked, viewsController.getTour)
+router.get('/login', authController.isLoggedIn, viewsController.getloginForm)
 router.get('/signup', viewsController.getSignUpForm)
 router.get('/me',authController.protect, viewsController.getAccount)
 router.post('/submit-user-data', authController.protect, viewsController.updateUserData)

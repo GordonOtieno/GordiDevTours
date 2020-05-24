@@ -1,5 +1,5 @@
-const multer = require('multer')
-const sharp = require('sharp')
+const multer = require('multer')  //reading files
+const sharp = require('sharp')    //image processing resizing
 const User=require('../models/userModel')
 const catchAsync=require('../utils/catchAsync')
 const AppError=require('../utils/appError')
@@ -38,7 +38,7 @@ exports.resizeUserPhoto = catchAsync(async(req,res,next)=>{
     if(!req.file) return next()
     //buffer does not create filename so it is redefined
     req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`
- await sharp(req.file.buffer)
+ await sharp(req.file.buffer)  //return a promise
    .resize(500,500)
    .toFormat('jpeg')
    .jpeg({quality: 90})
@@ -49,12 +49,12 @@ exports.resizeUserPhoto = catchAsync(async(req,res,next)=>{
 
 
 const filterObj = (obj, ...allowedFields)=>{
-    //lop through the object to find a match
+    //loop through the object to find a match
     const newObj = {}
     Object.keys(obj).forEach(el=>{
         if(allowedFields.includes(el)) newObj[el] = obj[el]
     })
-    return newObj
+    return newObj 
 }
 
 exports.getMe = (req,res,next) => {
@@ -71,7 +71,7 @@ if(req.body.password || req.body.passwordConfirm){
     return next(new AppError("This route is not for password update. Please use /updateMyPassword.",400))     
 }
  
- // filter out unwanted documents
+ // filter out unwanted documents only allow name and email no role changing
 const filteredBody=filterObj(req.body, 'name','email')
 if(req.file) filteredBody.photo = req.file.filename // from console.log(req.file)
 

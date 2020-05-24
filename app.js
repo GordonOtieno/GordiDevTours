@@ -41,9 +41,8 @@ const limiter= rateLimit({  //limit requests from same api
 })
 app.use('/api', limiter) 
 
-
 //body parser, reading data from body into req.body
-app.use(express.json({limit: '10kb'})) //limit the amount of data int body
+app.use(express.json({limit: '10kb'})) //limit the amount of data in the body
 //reading cookies from clients
 app.use(cookieParser())
 //allow passsing data from form/ traditional update
@@ -53,10 +52,10 @@ app.use(express.urlencoded({ extended: true, limit: '10kb'}))
 app.use(mongoSanitize()) //removes $" 
 //Data sanitization against XSS
 app.use(xss()) //removes html and scripts
-//prevent http parameter pollution
-app.use(hpp({
+
+app.use(hpp({   //prevent http parameter pollution duplicate fields incooperation
     whitelist:[
-     'duration','ratingsQuantity','ratingAverage',
+     'duration','ratingsQuantity','ratingAverage',  //array to allow duplicate in the string
       'price','difficulty','maxGroupSize']
 }))
 
@@ -64,6 +63,7 @@ app.use(hpp({
 //Test middleware
 app.use((req,res,next)=>{
 // console.log(req.headers) 
+//console.log(req.headers)
 req.requestTime=new Date().toISOString()
 //console.log(req.cookies) 
 next() 

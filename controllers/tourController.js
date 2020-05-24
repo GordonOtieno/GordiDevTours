@@ -20,7 +20,7 @@ const upload = multer({storage: multerStorage,
                        fileFilter: multerFilter })
 
 exports.uploadTourImages = upload.fields([
-    {name: 'imageCover', maxCount: 1},
+    {name: 'imageCover', maxCount: 1}, //both imageCover and images are 
     {name: 'images', maxCount: 3}
     // upload.single('image') console.log(req.file)
     // upload.array('images, 5')  console.log(req.files)
@@ -33,16 +33,16 @@ exports.resizeTourImages =catchAsync(async(req,res,next) =>{
 
     if(!req.files.imageCover || !req.files.images) return next()
   //1. cover image
-    await sharp(req.files.imageCover[0].buffer)
+    await sharp(req.files.imageCover[0].buffer)  //its an array of one
     .resize(2000,1333) //3:2 ratio
     .toFormat('jpeg')
     .jpeg({quality: 90})
-    .toFile(`public/img/tours/${req.body.imageCover}`)
+    .toFile(`public/img/tours/${req.body.imageCover}`) //in db
 
     //2. Images
     req.body.images = []   //this is an array fields
 
-  await Promise.all(
+  await Promise.all(  //map is prefered instead of forEach
     req.files.images.map(async (file, i)=>{
         const filename= `tour-${req.params.id}-${Date.now()}-${i+1}.jpeg`
 
@@ -50,17 +50,14 @@ exports.resizeTourImages =catchAsync(async(req,res,next) =>{
             .resize(2000,1333) //3:2 ratio
             .toFormat('jpeg')
             .jpeg({quality: 90})
-            .toFile(`public/img/tours/${filename}`)    
+            .toFile(`public/img/tours/${filename}`) 
+
             req.body.images.push(filename)
     })
    )
-   console.log(req.body) 
+  // console.log(req.body) 
         next()
     })
-
-
-
-
 
 exports.aliasTopTours=async (req,res,next)=>{
  req.query.limit='5'
@@ -116,6 +113,9 @@ exports.getAlltours=factory.getAll(Tour)
     }
 }*/
 exports.getTour=factory.findOne(Tour,{path:'reviews'})
+//exports.getTour=factory.findOne(Tour,{path:'reviews'
+                                //      select: '-_v -passwordChangedAt'
+                                //      })
 // exports.getTour=catchAsync(async (req,res,next)=>{ 
    
 //      const tour=await Tour.findById(req.params.id).populate('reviews')
@@ -260,7 +260,7 @@ exports.getMonthlyPlan= catchAsync (async (req,res,next)=>{
 
 exports.getToursWithin =catchAsync(async (req,res,next)=>{
     //use destructuring to get the variable at once
-  const {distance,latlng,unit}=req.params
+  const { distance,latlng,unit }=req.params
   const [lat,lng] = latlng.split(',')
   //converting the radius of the sphere to radiants distance/radius of earth
   const radius= unit ==='mi' ? distance / 3963.2 : distance / 6378.1
@@ -296,13 +296,13 @@ const multiplier = unit ==='mi'? 0.000621371 : 0.001
   const distances=await Tour.aggregate([
       {
           //Atleas a field should have a geo index in schema
-          $geoNear: {
+          $geoNear: {  //should be the first in pipeline
              near:{
                  type:'point',
                  coordinates: [lng*1, lat*1]
              },
              distanceField: 'distance',
-             distanceMultiplier: multiplier
+             distanceMultiplier: multiplier  //specify a number to be multiplied by all the distances
           }
       },
       {

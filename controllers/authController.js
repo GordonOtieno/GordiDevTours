@@ -8,22 +8,22 @@ const Email=require('../utils/email')
 
 
 const signToken = id=>{
-                 //payload           secrete 
+                 //payload           secrete  //secret should be 32 xters
   return  jwt.sign({ id }, process.env.JWT_SECRET, 
     {expiresIn: process.env.JWT_EXPIRES_IN })
 }
-//reate cookie
+//create cookie
 const createSendToken= (user,statusCode,res)=>{
     const token=signToken(user._id)
-    const cookieOptions={
+    const cookieOptions={  
         expiresIn: new Date(
             Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
             ),
-         
+            
             httpOnly: true
     }
-    if(process.env.NODE_ENV==='production') cookieOptions.secure=true
-    res.cookie('jwt',token,cookieOptions)
+    if(process.env.NODE_ENV ==='production') cookieOptions.secure = true
+       res.cookie('jwt',token,cookieOptions)
     //remove the password from cookies output
     user.password=undefined
     res.status(statusCode).json({
@@ -38,7 +38,7 @@ const createSendToken= (user,statusCode,res)=>{
 exports.signUp=catchAsync(async (req,res,next)=>{
  const newUser=await User.create(req.body) 
 
- //const url='http://127.0.0.1:8000/me'
+ //const url='http://127.0.0.1:8000/me' this in a my accout
  const url = `${req.protocol}://${req.get('host')}/me` 
  await new Email(newUser, url).sendWelcome()
  
@@ -54,11 +54,11 @@ exports.login= catchAsync(async(req,res,next)=>{
     return next(new AppError('Please provide email and password',400))
   }
  //chk if username exist and password correct
- const user=await User.findOne({email}).select('+password')
-
+ const user=await User.findOne({ email }).select('+password') // explicite select the unselected
+ //correctPassword is from the user model
  if(!user || (!await user.correctPassword(password,user.password))){ //correctPassword intance method in the model
      return next(new AppError('Inccorrect Email or password',401))
- }
+ } 
 
  //if all is okay, sign a web token and send
  createSendToken(user,200,res)
@@ -89,7 +89,7 @@ exports.logout= (req,res)=>{
             return next(new AppError("You are not logged in, Please log in before you continue.",401))
         
             }
-        //2)varification token. the function returns a promise instead of using callback function
+        //2) varification token. the function returns a promise instead of using callback function
         const decode = await promisify(jwt.verify)(token,process.env.JWT_SECRET)
         console.log(decode)
         //3) chk if user still exist  //id in the decoded payload
@@ -97,8 +97,9 @@ exports.logout= (req,res)=>{
         if(!currentUser){
             return next(new AppError('The user of the token no longer exist.',401))
         }
-            //chk if the user changed pass after the token was issued
-        if(currentUser.changedPasswordAfter(decode.iat)){
+         //3) chk if the user changed pass after the token was issued
+         //changedPasswordAfter- from users thin controller
+         if(currentUser.changedPasswordAfter(decode.iat)){
             return next(new AppError('User recently changed password! Please log in again.'))
         }
 
@@ -167,7 +168,7 @@ const resetToken=user.createPasswordResetToken()
     try{
     const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}` 
     await new Email(user,resetURL).sendPasswordReset()
-
+ 
 res.status(200).json({
     status: 'success',
     message: 'Token sent to email!'
@@ -182,11 +183,11 @@ res.status(200).json({
 })
 
 exports.resetPassword =catchAsync (async(req,res,next) => {
-    //get user based i=on the token
+    //get user based on the token
   const hashedToken=crypto.createHash('sha256')
   .update(req.params.token)
   .digest('hex')
-
+// the only thing we know about the user now is passreset time
   const user=await User.findOne({passwordResetToken:hashedToken,
   passwordResetExpires: {$gt: Date.now()}})
 

@@ -7,20 +7,15 @@ const router=express.Router()
 router.post('/signUp', authController.signUp)
 router.post('/login', authController.login)
 router.get('/logout', authController.logout)
-
 router.post('/forgotPassword', authController.forgotPassword)
 router.patch('/resetPassword/:token', authController.resetPassword)
 
-//Protect all the routes after this route
 router.use(authController.protect) 
-
 router.patch('/updateMyPassword', authController.updatePassword)
 router.patch('/updateMyProfile',userController.uploadUserPhoto,userController.resizeUserPhoto, userController.updateMe)
-router.delete('/deleteMyProfile', userController.deleteMe)
+router.delete('/deleteMyProfle', userController.deleteMe)
 
-router.get('/me',
-                  userController.getMe,
-                  userController.getUser)
+router.get('/me',userController.getMe,userController.getUser)
 
 router.use(authController.restrictTo('admin'))
 

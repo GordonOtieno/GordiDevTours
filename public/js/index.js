@@ -47,11 +47,11 @@ if (loginForm)
   if(userdata)
   userdata.addEventListener('submit', e =>{
       e.preventDefault()
-      const form =new FormData()
+      const form =new FormData() //this is a multipart form
       form.append('name', document.getElementById('name').value)
       form.append('email', document.getElementById('email').value)
       form.append('photo', document.getElementById('photo').files[0])
-      console.log(form)
+     // console.log(form)
       updateSetting(form, 'data')
     
     })

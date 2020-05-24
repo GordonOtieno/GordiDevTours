@@ -57,7 +57,7 @@ module.exports = class Email{
   }
 
   async sendWelcome(){
-   await this.send('welcome', 'welcome to the gordiTour. The only place to get the oportunity to explore your world')
+   await this.send('welcome', 'Welcome to gordiTour. The only place to get the oportunity to explore your World')
   }
 async sendPasswordReset(){
   await this.send('passwordReset', 'Your password reset token is valid for 10 minites ')

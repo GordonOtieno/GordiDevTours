@@ -31,17 +31,17 @@ user: {
     }
 
 },
-{
+{ 
     toJSON: {virtuals:true},
     toObject: {virtuals:true}
 })
-//unique key no duplicate reviews per Tour   instance methods
+//unique key no duplicate reviews per Tour   instance methods candidate keys
  reviewSchema.index({tour: 1, user: 1}, {unique: true})
 
 
 //DOCUMENTS MIDDLEWARE
 reviewSchema.pre(/^find/, function(next){
-    // this.populate({
+    // this.populate({  getting rid of recurrent populate
     //     path: 'tour',
     //     select:'name'
     // }).populate({
@@ -55,7 +55,7 @@ reviewSchema.pre(/^find/, function(next){
     next()
 })
 
-//ratings avearage on a particular tour calculator
+//ratingsAverage on a particular tour calculator
 reviewSchema.statics.calculateAverageRatings = async function (tourId){
     const stats = await this.aggregate([
         {
@@ -96,7 +96,7 @@ this.constructor.calculateAverageRatings(this.tour)
 // findByIdAndUpdate
 // findByIdAndDelete
 reviewSchema.pre(/^findOneAnd/, async function(next){ 
-  this.r = await this.findOne()
+  this.r = await this.findOne()  //get the document accest worked on
  //console.log(this.r)
   next()
 })

@@ -8,7 +8,7 @@ const tourSchema=new mongoose.Schema({
         required: [true, 'A tour must have a name'],
         unique:true,
         trim:true,
-        maxlength:[30,'A tour name must have less or equal to 30 characters'],
+        maxlength:[30,'A tour name must have upto 30 characters'],
         minlength:[3,'A tour name must have atleast 3 characters']
         // validate:[validator.isAlpha, 'Tour name must only contain characters']
     },
@@ -34,7 +34,7 @@ const tourSchema=new mongoose.Schema({
         default:4.5 ,
         min:[ 1, 'Rating must be between 1.0-5.0'],
         max:[ 5, 'Rating must be between 1.0-5.0'],
-        set: val => Math.round((val*10)/10)   
+        set: val => Math.round(val * 10) / 10   
     },
     ratingsQuantity: {
         type:Number,
@@ -129,7 +129,7 @@ tourSchema.index({ startLocation: '2dsphere' }) //real points on the earth
 tourSchema.virtual('reviews',{
     ref:'Review',
     foreignField: 'tour',
-    localField: '_id'
+    localField: '_id' 
 })
 
 
@@ -150,7 +150,7 @@ tourSchema.pre(/^find/, function(next){
     this.populate({
         path: 'guides',
         select:'-__v -passwordChangedAt'
-    })
+    }) 
     next()
 })
 
@@ -161,15 +161,16 @@ tourSchema.pre('save', function(next){
 /*tourSchema.pre('save', function(next){
     console.log('will save the document .........')
     next()
-})*/
+})
 tourSchema.post('save',function(doc,next){
-    //console.log(doc)
+    console.log(doc)
 next()
 })
+*/
 
 //QUERY MIDDLEWARE secrecy
 //tourSchema.pre('find',function(next){
-tourSchema.pre(/^find/,function(next){
+tourSchema.pre(/^find/,function(next){ 
 this.find({secretTour: {$ne:true } })
 this.start=Date.now()
     next()

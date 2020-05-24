@@ -9,7 +9,6 @@ const tours=await Tour.find()
     //build template
     //Render that templates using tour data from 1
     res.status(200).render('overview', {
-        isbooked: false,
         title: 'All Tours',
          tours
     })
@@ -20,14 +19,18 @@ exports.getTour = catchAsync (async(req, res, next)=>{
      path: 'reviews',
      fields: 'review rating user'   
     })
+    
    if(!tour){
     return next (new AppError("There is no tour with that name",404))
      }
+   
 
     res.status(200).render('tour',{
          title:`${tour.name} Tour`,
          tour
+         
      })
+   
  })
 
  exports.getloginForm = (req, res)=>{
@@ -58,8 +61,8 @@ exports.getTour = catchAsync (async(req, res, next)=>{
      const tours= await Tour.find({_id: {$in: tourIDs}})
     
 
-     res.status(200).render('overview', {
-         isbooked: true,
+
+     res.status(200).render('overview', {       
          title: 'My Tours',
          tours
      })
@@ -79,3 +82,21 @@ exports.getTour = catchAsync (async(req, res, next)=>{
         user: updatedUser
     })
  })
+
+ exports.isBooked = async(req, res, next) =>{
+    try{
+        const tour = await Tour.findOne({slug: req.params.slug}).select('_id')
+    const booked= await Booking.findOne({tour: tour._id})
+    if(!booked) {
+      return next()  
+    }
+    
+    res.locals.isbooked=booked
+    return next()
+
+    }catch(err){
+       return next()
+    }
+   next() 
+ 
+ }

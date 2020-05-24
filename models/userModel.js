@@ -39,7 +39,7 @@ const userSchema=new mongoose.Schema({
             validator: function(el){
             return el === this.password
         },
-        message: 'Password are not the same!'
+        message: 'Passwords do not match! Try again'
     }
  },
     role: {
@@ -61,7 +61,7 @@ active:{
 //QUERY MIDDLEWARES
 
 //passwordChangedAt update
-userSchema.pre("save",function(next){
+userSchema.pre("save",function(next){ //password is modified or new doc
   if(!this.isModified('password') || this.isNew) return next()
 //This ensures that the the field is modified after the password has been changed
   this.passwordChangedAt=Date.now()-1000
@@ -72,19 +72,22 @@ userSchema.pre('save', async function(next){
     //runs if [password was modified]
    if(!this.isModified('password'))return next()
    //hash passwod with cost of 12 
-   this.password=await bcrypt.hash(this.password,12) //cost 12 cpu usage
+   this.password=await bcrypt.hash(this.password,12) 
    //delete the password
    this.passwordConfirm=undefined
    next()
 })
 
-userSchema.pre(/^find/, function(next){ //applied to getall to select only active users
+userSchema.pre(/^find/, function(next){ //applied to get all to select only active users
  //this points to the current qery
  this.find({ active:{$ne: false} })
  next()
 })
 
-userSchema.methods.correctPassword = async function(candidatePassword, userPassword){
+//Instance method returns true or false
+userSchema.methods.correctPassword = async function(
+    candidatePassword, userPassword
+    ){
     return await bcrypt.compare(candidatePassword,userPassword)
 }
 
@@ -107,7 +110,7 @@ userSchema.methods.createPasswordResetToken= function(){
  console.log({resetToken},this.passwordResetToken)
  
  this.passwordResetExpires=Date.now()+10*60*1000
- return resetToken
+ return resetToken //this is to be sent vi email
 }
 
 const User=mongoose.model('User',userSchema)

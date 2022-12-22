@@ -27,7 +27,7 @@
     "hpp": "^0.2.3",
     "html-to": "0.0.1",
     "html-to-text": "^5.1.1",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "mongoose": "^5.9.11",
     "morgan": "^1.10.0",
     "multer": "^1.4.2",
